@@ -1,4 +1,4 @@
-##before doing this its better to use split function to split file into size less than 4G
+##before doing this its better to use split function to split file into sizes less than 4G
 import itertools
 import os
 
