@@ -1,6 +1,6 @@
 import os
 import csv
-filepath='/home/u22/shni/files/gohong_chipseq.csv'
+filepath='/home/u22/shni/files/chipseq.csv'
 file=open(filepath, 'rb') 
 csvfile=csv.reader(file)
 data=[row for row in csvfile]
@@ -30,12 +30,12 @@ def filepath(sampleno):
 				break
 	laneid=int(''.join([s for s in libraryid if s.isdigit()]))
 	laneid_str=('0'+str(laneid))[-2:]
-	return '/wrk/data/Gonghong/%s%s/lane%d_NoIndex_L00%d_R1_001.fastq.gz.%s.fq.gz' %(libraryid[:4],laneid_str,
+	return '/wrk/data/%s%s/lane%d_NoIndex_L00%d_R1_001.fastq.gz.%s.fq.gz' %(libraryid[:4],laneid_str,
 	lanelist[laneid-1], lanelist[laneid-1], barcode)
 #############################################
 def write_row(row):
 
-	write_raw=[0,'A','%s/%s' %(row[0],row[7]),'/wrk/data/Gonghong','wrk/data/Gonghong',filepath(row[0]),filepath(row[7]),
+	write_raw=[0,'A','%s/%s' %(row[0],row[7]),'/wrk/data/','wrk/data',filepath(row[0]),filepath(row[7]),
 	row[0],row[7],'human',19,10,30,300,0.00001,'D',0,1,1000,'0_25',4,'HH']
 	write=','.join(str(ele) for ele in write_raw)
 	return write
