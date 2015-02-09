@@ -55,11 +55,11 @@ with open(file_path+coordinate_file1) as file:
 		if len(line[3]) < 3 and len(line[7].strip()) < 3:
 			h_len_lim=h_length_limit(line[3])
 			m_len_lim=m_length_limit(line[7])
-			content1='chr'+line[3]+'\t'+(str(int(line[1])-500000) if int(line[1]) > 500000 else str(0))+'\t'+liftup(h_len_lim,line[2],500000)+'\t'+line[0]
-			content2='chr'+line[7].strip()+'\t'+(str(int(line[5])-500000) if int(line[5]) > 500000 else str(0))+'\t'+liftup(m_len_lim,line[6],500000)+'\t'+line[4]
+			content1='chr'+line[3]+'\t'+(str(int(line[1])-500000) if int(line[1]) > 500000 else str(0))+'\t'+liftup(h_len_lim,line[2],500000)+'\t'+line[0]+'_'+'chr'+line[3]+'_'+(str(int(line[1])-500000) if int(line[1]) > 500000 else str(0))+'_'+liftup(h_len_lim,line[2],500000)+'\t'
+			content2='chr'+line[7].strip()+'\t'+(str(int(line[5])-500000) if int(line[5]) > 500000 else str(0))+'\t'+liftup(m_len_lim,line[6],500000)+'\t'+line[4]+'_'+'chr'+line[7].strip()+'_'+(str(int(line[5])-500000) if int(line[5]) > 500000 else str(0))+'_'+liftup(m_len_lim,line[6],500000)+'\t'
 			os.makedirs(file_path+'sequences/'+str(i)+'thpair')
-			writefile(file_path+'sequences/'+str(i)+'thpair/'+line[0],content1)
-			writefile(file_path+'sequences/'+str(i)+'thpair/'+line[4],content2)
+			writefile(file_path+'sequences/'+str(i)+'thpair/'+line[0]+'.bed',content1)
+			writefile(file_path+'sequences/'+str(i)+'thpair/'+line[4]+'.bed',content2)
 			i += 1
 file.close()
 
