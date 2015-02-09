@@ -30,7 +30,7 @@ def writefile(path,stuff):
 def h_length_limit(chromosome):
 	if chromosome == 'X':
 		return int(hg38_length[22].split()[1])
-	if chromosome == 'Y':
+	elif chromosome == 'Y':
 		return int(hg38_length[23].split()[1])
 	else:
 		return int(hg38_length[int(chromosome)-1].split()[1])
@@ -38,7 +38,7 @@ def h_length_limit(chromosome):
 def m_length_limit(chromosome):
 	if chromosome.strip() == 'X':
 		return int(mm10_length[19].split()[1])
-	if chromosome.strip() == 'Y':
+	elif chromosome.strip() == 'Y':
 		return int(mm10_length[20].split()[1])
 	else:
 		return int(mm10_length[int(chromosome)-1].split()[1])
