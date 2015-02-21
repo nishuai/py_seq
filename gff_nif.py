@@ -13,8 +13,8 @@ else:
         f_output=os.path.abspath('.'.join(name_input.split('.')[:-1])+'.nif') if '.' in name_input else f_input+'.nif'
 
 class Nif:
-        info_list=[]
         def __init__(self, record):
+                self.info_list=[]
                 middle1=record.strip().split('\t')
                 middle2=middle1[0].split('_')
                 middle3=middle1[9].split('"')[1].split('_')
@@ -36,23 +36,25 @@ class Nif:
                 self.info_list.append(self.M_stop)
                 self.M_ens_id=middle3[0]
                 self.info_list.append(self.M_ens_id)
+
 def Main(infile,outfile):
         table=[]
         file=open(infile,'r')
         file_write=open(outfile,'w')
         i=1
         for line in file:
-                while i<100000:
-                        i+=1
-                        if line:
-                                nif=Nif(line)
-                                table.append(nif.info_list)
-                                del(nif)
-                else:
+                nif=Nif(line)
+                table.append(nif.info_list)
+                print nif.info_list
+                del(nif)
+                i+=1
+                if i == 100000:
                         i=1
                         for records in table:
-                                file_write.write('\t'.join(str(records)))
-                        table=[]
-
+                                file_write.write('\t'.join(str(items) for items in records+'\n'))
+                                table=[]
+        else:
+                        for records in table:
+                                file_write.write('\t'.join(str(items) for items in records)+'\n')
 if __name__=='__main__':
         Main(f_input,f_output)
