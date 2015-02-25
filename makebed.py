@@ -78,9 +78,9 @@ def Main(coordinate_file,flanking):
                                 m_len_lim=m_length_limit(line[7])
                                 content1='chr'+line[3]+'\t'+(str(int(line[1])-flanking) if int(line[1]) > flanking else str(0))+'\t'+liftup(h_len_lim,line[2],flanking)+'\t'+line[0]+'_'+'chr'+line[3]+'_'+(str(int(line[1])-flanking) if int(line[1]) > flanking else str(0))+'_'+liftup(h_len_lim,line[2],flanking)+'\n'
                                 content2='chr'+line[7].strip()+'\t'+(str(int(line[5])-flanking) if int(line[5]) > flanking else str(0))+'\t'+liftup(m_len_lim,line[6],flanking)+'\t'+line[4]+'_'+'chr'+line[7].strip()+'_'+(str(int(line[5])-flanking) if int(line[5]) > flanking else str(0))+'_'+liftup(m_len_lim,line[6],flanking)+'\n'
-                                os.makedirs(file_path+'sequences/'+str(i)+'thpair')
-                                writefile(file_path+'sequences/'+str(i)+'thpair/'+line[0]+'.bed',content1)
-                                writefile(file_path+'sequences/'+str(i)+'thpair/'+line[4]+'.bed',content2)
+                                os.makedirs(file_path+'/sequences/'+str(i)+'thpair')
+                                writefile(file_path+'/sequences/'+str(i)+'thpair/'+line[0]+'.bed',content1)
+                                writefile(file_path+'/sequences/'+str(i)+'thpair/'+line[4]+'.bed',content2)
                                 i += 1
         file.close()
 if __name__=='__main__':
