@@ -1,4 +1,4 @@
-## makebed makes bedfiles contains single bed record for a pair of homologus genes
+## makebed makes bedfiles contains single bed record for each pair of homologus genes in the input file
 #!/usr/bin/python
 # coding=utf-8
 import os, sys, argparse
