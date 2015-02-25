@@ -22,9 +22,9 @@ if args.flankinglength:
 #####  'sequences' is the file contail bed file pairs of ortholog genes between mouse and human
 
 file_path=os.path.dirname(coordinate_file)
-if arg.outputdir:
-        if os.path.exists(arg.outputdir):
-                file_path=arg.outputdir
+if args.outputdir:
+        if os.path.exists(args.outputdir):
+                file_path=args.outputdir
         else:
                 sys.exit('ERROR: output file path does not exist')
 
