@@ -12,13 +12,13 @@ if not os.path.isfile(args.input):
         sys.exit('ERROR: File '+args.input+' is not a valid file')
 coordinate_file=os.path.abspath(args.input)
 flanking=500000
-if args.fl:
+if args.flankinglength:
         try:
-                x+=1
-                flanking=x-1
+                args.flankinglength+=1
+                flanking=args.flankinglength-1
         except TypeError:
                 sys.exit('ERROR: flanking sequence length requires an interger')
-#####　file path and initiate the coorediates for two genomes
+#####file path and initiate the coorediates for two genomes
 #####  'sequences' is the file contail bed file pairs of ortholog genes between mouse and human
 
 file_path=os.path.dirname(coordinate_file)
