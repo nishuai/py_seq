@@ -47,15 +47,13 @@ def get_SAM_seqnames(samfile):
 	print 'Start reading the SAM file...'
 	sam_seqnames=[]
 	sam_file=open(samfile)
-	number_records=0
 	while True:
 		code=list(itertools.islice(sam_file,1))
 		if code == []:
-			print 'SAM file reading completed, '+str(number_records)+' reads mapped to the genome.'
+			print 'SAM file reading completed, '+str(len(set(sam_seqnames)))+' reads mapped to the genome.'
 			break
 		if code [0][0] != '@' and int(code[0].split()[3]) != 0: 
 			sam_seqnames.append(code[0].split()[0])
-			number_records+=1
 	sam_file.close()
 	return sam_seqnames
 #### sort the seqnames from both read file and sam file
@@ -105,8 +103,10 @@ def Main(readfile1,readfile2,samfile):
 	SAM_seqnames.append('DUMMY')
 	for i in range(len(reads_seqnames)):
 		if reads_seqnames[i] == SAM_seqnames[0]:
-			new_reads1.append(reads1[i]); new_reads2.append(reads2[i]);
 			del SAM_seqnames[0] 
+		else:
+			new_reads1.append(reads1[i]); new_reads2.append(reads2[i]);
+	print str(len(new_reads1)) + 'and' + str(len(new_reads2)) + 'reads are left after removal'
 	#### quote the variable name to enable concatenation with path to make filename
 	#### variable itself are found using globals()[variable_name])
 	write_fastq_list('new_reads1', args.outputdir); write_fastq_list('new_reads2',args.outputdir)		
