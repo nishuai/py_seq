@@ -24,17 +24,14 @@ if __name__=='__main__':
 	sorted_array=get_reads_seqnames(args.input_contig)	
 	n50_length=sum(sorted_array)*0.5
 	n90_length=sum(sorted_array)*0.9
-	print sorted_array
 	accu_length=0
 	for i in range(len(sorted_array)):
 		accu_length=accu_length+sorted_array[i]
 		if accu_length>n50_length:
-			print sorted_array[i], accu_length
 			n_50=sorted_array[i]
 			for k in range(i+1,len(sorted_array)):
 				accu_length=accu_length+sorted_array[k]
 				if accu_length>n90_length:
-					print sorted_array[k], accu_length
 					n_90=sorted_array[k]
 					break
 			ff=open(''.join(args.input_contig.split('.')[:-1])+'_summary.txt','w')
