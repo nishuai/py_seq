@@ -8,7 +8,13 @@ import numpy as np
 from Bio import pairwise2, SeqIO
 parser=argparse.ArgumentParser()
 parser.add_argument('input_contig',metavar='input_contig', help='Input the fastq read file')
+parser.add_argument('-min_len',help='Contigs with length greater than the iterger min_len be considered into statistics')
 args=parser.parse_args()
+
+if args.min_len:
+	try: int(args.min_len)+1
+	except ValueError:
+		sys.exit('ERROR: The minimun length of contigs taking into consideration -min_len shoud be an interger')
 
 #### get the lengths of all contigs
 def get_reads_seqnames(contig_file):
@@ -22,6 +28,18 @@ def get_reads_seqnames(contig_file):
 #### get details of a sorted array
 if __name__=='__main__':
 	sorted_array=get_reads_seqnames(args.input_contig)	
+	min_len=0
+	if args.min_len:
+		min_len=args.min_len
+		for i in range(len(sorted_array)):
+			print i
+			print sorted_array[i]
+			if sorted_array[i]<int(min_len):
+				if i==0:
+					sys.exit('The minimun length of contigs is greater than the longest contig in the give fasta file')
+				sorted_array=sorted_array[:i]
+				break
+
 	n50_length=sum(sorted_array)*0.5
 	n90_length=sum(sorted_array)*0.9
 	print sorted_array
