@@ -32,8 +32,6 @@ if __name__=='__main__':
 	if args.min_len:
 		min_len=args.min_len
 		for i in range(len(sorted_array)):
-			print i
-			print sorted_array[i]
 			if sorted_array[i]<int(min_len):
 				if i==0:
 					sys.exit('The minimun length of contigs is greater than the longest contig in the give fasta file')
