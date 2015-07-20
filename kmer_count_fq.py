@@ -35,9 +35,9 @@ sequence='AATTCGACACCGTTAGACGATTGATAGAGAGAGAGAGAAAAACCGCG'
 #### calculate the hash value for the first k-mer in the sequence,
 #### bases of the sequence are encoded in byte.
 
-#### Hash value is the sum of the binary values of the original sequence and its
+#### Hash value is the minimium of the binary values of the original sequence and its
 #### reverse complement, resulting in a identical hashing value for reverse complements.
-
+#### half of the memory usage can also be saved with this trick.
 
 def start_seq_bin(seq):
         bin_index=0
@@ -68,3 +68,14 @@ def calc_seq_index(seq):
                 print smaller_bin
                 h_array[smaller_bin]=h_array[smaller_bin]+1
 
+
+#### go through the whole fastq file and record the frequency of every kmers in the hash table.
+with open args.input as input:
+        while True:
+                record=list(itertools.islice(input, 4))[1]      
+                if record=[]:
+                        print 'fastq file read complete'
+                        break
+args.input.close()
+
+                
