@@ -48,6 +48,7 @@ def filetype_check(file):
 			if len(record[0].split('\t'))>10 and record[0].split('\t')[1].isdigit():
 				f_test.close()
 				return 'sam',record[0]
+
 	elif csv==10:
 		f_test.close()
 		return 'csv',head10[9]
@@ -77,11 +78,12 @@ def tax_column(file):
 		for i in range(len(example_line.split(sep))):
 			if re.match('gi.[0-9]*\|',example_line.split(sep)[i]):
 				gi_match+=1
-				gi_column=i
+				if gi_match==1:
+					gi_column=i
 			if len(example_line.split(sep)[i].split())> 1 and 'complete' not in example_line.split(sep)[i]:
 				name_match+=1
 				name_column=i
-		if gi_match==1 and name_match==1:
+		if gi_match>1 and name_match==1:
 			return filetype, gi_column+1, name_column+1
 		else:
 			sys.exit('ERROR: no taxonomic information found in the data, please check the input')
@@ -114,11 +116,18 @@ def tax_column(file):
 			return filetype, 3, None
 		else:  sys.exit('ERROR: the 3rd column does not contain the taxonomic information in the sam file, please check the input')
 #### defining methods for line operation
+
+def num(s):
+    try:
+        return float(s)
+    except ValueError:
+	return s	
+
 class Csv_hit:
 	def __init__(self,record,gi_column, name_column):
 		self.words=record.split(',')
 		self.gi_number=self.words[gi_column-1].split('|')[1]
-		self.names=self.words[name_column-1].split()
+		self.names=[ i for i in self.words[name_column-1].split() if 'gi|' not in i and isinstance(num(i),(int,float)) == False]
 
 class Tsv_hit:
 	def __init__(self,record,gi_column, name_column):
