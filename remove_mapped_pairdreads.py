@@ -15,6 +15,10 @@ if not os.path.isfile(args.input_read2):
 	sys.exit('ERROR: File '+args.input_read2+' is not a valid read2  file')
 if not os.path.isfile(args.input_sam):
 	sys.exit('ERROR: File '+args.input_sam+' is not a valid sam file')
+if args.outputdir:
+	if not os.path.isdir(args.outputdir):
+		sys.exit('ERROR: '+os.path.abspath(args.outputdir)+' is not a directory or does not exist')
+
 
 #### check the intergrity of the two fastq files, store the seq-names in the meantime
 #### make sure they have identical seq-names (qname in sam file)
@@ -106,7 +110,7 @@ def Main(readfile1,readfile2,samfile):
 			del SAM_seqnames[0] 
 		else:
 			new_reads1.append(reads1[i]); new_reads2.append(reads2[i]);
-	print str(len(new_reads1)) + 'and' + str(len(new_reads2)) + 'reads are left after removal'
+	print str(len(new_reads1)) + ' and ' + str(len(new_reads2)) + ' reads are left after removal'
 	#### quote the variable name to enable concatenation with path to make filename
 	#### variable itself are found using globals()[variable_name])
 	write_fastq_list('new_reads1', args.outputdir); write_fastq_list('new_reads2',args.outputdir)		
