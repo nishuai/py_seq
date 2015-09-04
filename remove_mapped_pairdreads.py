@@ -18,7 +18,8 @@ if not os.path.isfile(args.input_sam):
 if args.outputdir:
 	if not os.path.isdir(args.outputdir):
 		sys.exit('ERROR: '+os.path.abspath(args.outputdir)+' is not a directory or does not exist')
-
+if args.input_read1==args.input_read2:
+	sys.exit('ERROR: File '+args.input_read1+' and '+args.input_read2+' are the same file!')
 
 #### check the intergrity of the two fastq files, store the seq-names in the meantime
 #### make sure they have identical seq-names (qname in sam file)
