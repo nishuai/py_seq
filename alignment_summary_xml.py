@@ -10,16 +10,19 @@ import urllib2
 #### passing arguments
 parser=argparse.ArgumentParser()
 parser.add_argument('input', help='Input file in sam or a xsv format from blast output')
+parser.add_argument('-fastq', help='Input fastq file for reads count')
 parser.add_argument('-top', default=10,  help='The number of most aligned genomes reported by the programme, default is 10')
 parser.add_argument('-o','--outputdir', default='.',help='The output directory or output to the current directory') 
 args=parser.parse_args()
 
+read_count=0
+if args.fastq:
+	read_count=sum(1 for line in open(args.fastq))
 
 try:int(args.top)+1
 except ValueError:
 		sys.exit('ERROR: top should be an integer')
 topn=int(args.top)
-print 'the default of top is: ' + str(topn)
 if not os.path.isfile(args.input): 
 	sys.exit('ERROR: File '+args.input+' is not a valid file')
 
@@ -139,6 +142,7 @@ class Tsv_hit:
 class Sam_hit:
 	def __init__(self,record,gi_column):
 		self.words=record.split('\t')
+		self.reads_number=record.split('\t')[0]
 		if record [0] != '@' and int(record.split()[3]) != 0: 
 			self.gi_number=record.split('\t')[gi_column-1].split('|')[1]
 		else:
@@ -159,23 +163,27 @@ class Hmm_hit:
 def Main(file):
 	species_names=dict(); gi_names=dict()
 	file_type, gi_column, name_column=tax_column(file)
-	matches=0
 	if file_type == 'sam':
+		reads={}
 		samfile=open(file,'r')
 		while True:
 			code=list(islice(samfile,1))
 			if code == []:
-				print 'SAM file reading completed, in total '+str(matches)+' reads found matches.'
+				print 'SAM file reading completed, in total '+str(len(reads))+' reads found matches.'
 				break
-			matches+=1
 			record=Sam_hit(code[0], gi_column)
 			if record.gi_number != None:
 				gi_names[record.gi_number]=gi_names.get(record.gi_number,0)+1
+			reads[record.reads_number]=reads.get(record.reads_number,0)
 		ff=open(''.join(args.input.split('.')[:-1])+'_summary.txt','w')
 		sorted_gis=sorted(gi_names,key=gi_names.get,reverse=True)
-		ff.write('In total '+str(matches)+' reads found matches.'+'\n')
+		if args.fastq:
+			ff.write('From '+str(read_count/4)+' reads:'+'\n')
+			ff.write(''+str(len(reads))+' ( '+str(float(len(reads))/(read_count/4)*100)+'%'+' )'+' reads (pairs)  found matches.'+'\n')
+		else:
+			ff.write('In total '+str(len(reads))+' reads found matches.'+'\n')
 		ff.write('Gene bank number of the most frequently mapped ' + str(topn)+' species'+'\n')
-		for i in range(topn):
+		for i in range(min(topn,len(gi_names))):
 			page=urllib2.urlopen('http://www.ncbi.nlm.nih.gov/nuccore/'+str(sorted_gis[i]))
 			soup=BeautifulSoup(page.read()).title.string
 			ff.write('{0:>20} {1:>15} {2:>15} {3:>15}'.format(str(sorted_gis[i]),':',str(gi_names[sorted_gis[i]])+' times','   |  '+soup)+'\n')
@@ -199,7 +207,7 @@ def Main(file):
 		sorted_gis=sorted(gi_names,key=gi_names.get,reverse=True)
 		ff.write('In total '+str(matches)+' reads found matches.'+'\n')
 		ff.write('Gene bank number of the most frequently mapped ' + str(topn)+' species'+'\n')
-		for i in range(topn):
+		for i in range(min(topn,len(gi_names))):
 			ff.write('{0:>20} {1:>15} {2:>15}'.format(str(sorted_gis[i]),':',str(gi_names[sorted_gis[i]])+' times')+'\n')
 		ff.write('mostly appeared species names:'+'\n')
 		for key in ['bv.','DNA','2','genome','chromosome','plasmid','sp.','subsp.','DSM','str.','1','ATCC']:
@@ -225,7 +233,7 @@ def Main(file):
 		sorted_gis=sorted(gi_names,key=gi_names.get,reverse=True)
 		ff.write('In total '+str(matches)+' reads found matches.'+'\n')
 		ff.write('Gene bank number of the most frequently mapped ' + str(topn)+' species'+'\n')
-		for i in range(topn):
+		for i in range(min(topn,len(gi_names))):
 			ff.write('{0:>20} {1:>15} {2:>15}'.format(str(sorted_gis[i]),':',str(gi_names[sorted_gis[i]])+' times')+'\n')
 		ff.write('mostly appeared species names:'+'\n')
 		for key in ['bv.','DNA','2','genome','chromosome','plasmid','sp.','subsp.','DSM','str.','1','ATCC']:
@@ -255,7 +263,7 @@ def Main(file):
 		sorted_gis=sorted(gi_names,key=gi_names.get,reverse=True)
 		ff.write('In total '+str(matches)+' reads found matches.'+'\n')
 		ff.write('Gene bank number of the most frequently mapped ' + str(topn)+' species'+'\n')
-		for i in range(topn):
+		for i in range(min(topn,len(gi_names))):
 			ff.write('{0:>20} {1:>15} {2:>15}'.format(str(sorted_gis[i]),':',str(gi_names[sorted_gis[i]])+' times')+'\n')
 		ff.write('mostly appeared species names:'+'\n')
 		for key in ['2715','86','7','5','isolate','Human','3','segment','genomic','virus,','dulcis','sequence','subtype','bv.','DNA','complete','phage','virus','strain','2','genome','chromosome','plasmid','sp.','subsp.','DSM','str.','1','ATCC']:
