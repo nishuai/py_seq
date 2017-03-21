@@ -14,7 +14,7 @@ from itertools import islice, combinations
 parser=argparse.ArgumentParser()
 parser.add_argument('input', help='Input GTF file')
 parser.add_argument('-output', help='output GTF file')
-parser.add_argument('-joint', default=False,  help='Will the coordinates of intron/exon joint points be save to the gtf file')
+parser.add_argument('-junction',  action='store_true', help='Will the coordinates of intron/exon joint points be save to the gtf file')
 args=parser.parse_args()
 
 if not os.path.isfile(args.input): 
@@ -60,6 +60,17 @@ def get_intron(gene, exons):
 	return intron
 
 
+def get_junctions(gene, introns):
+	junctions=[item for sublist in introns for item in sublist]
+	if not introns==[]:
+		if junctions[0]==gene[0]:
+			junctions.pop(0)
+		if junctions[-1]==gene[1]:
+			junctions.pop()
+		return(junctions)
+	else:
+		return([])
+	
 def remove_dups(num_list):
 ####remove duplicates for a list contains lists with same length
 	num_list.sort()
@@ -77,61 +88,123 @@ def Main(infile):
 	exons=[]
 	number_introns=0
 	inf=open(infile, 'r')
+	if args.junction:
+		out_junction=open(os.path.dirname(os.path.abspath(args.input))+'/junction_'+os.path.basename(args.input), 'w')
+
 	if not args.output:
 		filename=os.path.dirname(os.path.abspath(args.input))+'/intron_'+os.path.basename(args.input)
 		ouf=open(filename, 'w')
 	else:
 		ouf=open(args.output, 'w')
 
-	while True:
-		code=list(islice(inf,1))
-		if code == []:
-			print ('GTF file reading completed')
-			ouf.close()
-			inf.close()
-			break
-		code=code[0].split('\t')
-		if geneID == []:
-		###Initiate
-			if code[2]=='gene':
-				geneID=code[8].split()[1]
-				gene=[int(x) for x in code[3:5]]
-			if code[2]=='exon':
-				geneID=code[8].split()[1]
-				exons.append([int(x) for x in code[3:5]])
-		else:
-		###if there comes a new gene, then settle the previous gene & start a new
-			if code[8].split()[1] != geneID:
-				geneID=[]
-				###if a gene has only 1 exon it won't have intron 
-				if len(exons)>1:
-					exons.sort()
-					exons=merge_olp(exons)
-				###Calculate introns
-					introns=get_intron(gene, exons)
-				###Write intron and everything into a new file
-					for i in range(len(introns)):
-						record=template
-						record[2]='intron'
-						record[3:5]=[str(i) for i in introns[i]]
-						ouf.write('\t'.join(record))
 	
+	if not args.junction:
+		while True:
+			code=list(islice(inf,1))
+			if code == []:
+				print ('GTF file reading completed')
+				ouf.close()
+				inf.close()
+				break
+			code=code[0].split('\t')
+			if geneID == []:
+			###Initiate
 				if code[2]=='gene':
+					geneID=code[8].split()[1]
 					gene=[int(x) for x in code[3:5]]
-					exons=[]
-				elif code[2]=='exon':
-					exons=[int(x) for x in code[3:5]]
-					
-	
-	
-			else:
-				template=code[:]
-				if code[2]=='gene':
-					gene=[int(x) for x in code[3:5]]
-				elif code[2]=='exon':
+				if code[2]=='exon':
+					geneID=code[8].split()[1]
 					exons.append([int(x) for x in code[3:5]])
-	
-		ouf.write('\t'.join(code))
+			else:
+			###if there comes a new gene, then settle the previous gene & start a new
+				if code[8].split()[1] != geneID:
+					geneID=[]
+					###if a gene has only 1 exon it won't have intron 
+					if len(exons)>1:
+						exons.sort()
+						exons=merge_olp(exons)
+					###Calculate introns
+						introns=get_intron(gene, exons)
+					###Write intron and everything into a new file
+						for i in range(len(introns)):
+							record=template
+							record[2]='intron'
+							record[3:5]=[str(i) for i in introns[i]]
+							ouf.write('\t'.join(record))
+		
+					if code[2]=='gene':
+						gene=[int(x) for x in code[3:5]]
+						exons=[]
+					elif code[2]=='exon':
+						exons=[int(x) for x in code[3:5]]
+						
+		
+		
+				else:
+					template=code[:]
+					if code[2]=='gene':
+						gene=[int(x) for x in code[3:5]]
+					elif code[2]=='exon':
+						exons.append([int(x) for x in code[3:5]])
+		
+			ouf.write('\t'.join(code))
+	else:
+
+		out_junctions=open(os.path.dirname(os.path.abspath(args.input))+'/junction_'+os.path.basename(args.input), 'w')
+		while True:
+			code=list(islice(inf,1))
+			if code == []:
+				print ('GTF file reading completed')
+				ouf.close()
+				inf.close()
+				break
+			code=code[0].split('\t')
+			if geneID == []:
+			###Initiate
+				if code[2]=='gene':
+					geneID=code[8].split()[1]
+					gene=[int(x) for x in code[3:5]]
+				if code[2]=='exon':
+					geneID=code[8].split()[1]
+					exons.append([int(x) for x in code[3:5]])
+			else:
+			###if there comes a new gene, then settle the previous gene & start a new
+				if code[8].split()[1] != geneID:
+					geneID=[]
+					###if a gene has only 1 exon it won't have intron 
+					if len(exons)>1:
+						exons.sort()
+						exons=merge_olp(exons)
+					###Calculate introns
+						introns=get_intron(gene, exons)
+						junctions=get_junctions(gene, introns)
+					###Write intron and everything into a new file
+						for i in range(len(introns)):
+							record=template
+							record[2]='intron'
+							record[3:5]=[str(i) for i in introns[i]]
+							ouf.write('\t'.join(record))
+					###Write junctions
+						genename=template[8].split('"')[1]
+						for i in junctions:
+							out_junctions.write('%s \t %d \n' %(genename, i))
+		
+					if code[2]=='gene':
+						gene=[int(x) for x in code[3:5]]
+						exons=[]
+					elif code[2]=='exon':
+						exons=[int(x) for x in code[3:5]]
+						
+		
+		
+				else:
+					template=code[:]
+					if code[2]=='gene':
+						gene=[int(x) for x in code[3:5]]
+					elif code[2]=='exon':
+						exons.append([int(x) for x in code[3:5]])
+		
+			ouf.write('\t'.join(code))
 	
 if __name__=='__main__':
 	Main(args.input)
