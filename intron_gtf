@@ -14,7 +14,7 @@ from itertools import islice, combinations
 parser=argparse.ArgumentParser()
 parser.add_argument('input', help='Input GTF file')
 parser.add_argument('-output', help='output GTF file')
-parser.add_argument('-junction',  action='store_true', help='Will the coordinates of intron/exon joint points be save to the gtf file')
+parser.add_argument('-junction',  action='store_true', help='Will the coordinates of intron/exon joint points be saved as another file')
 args=parser.parse_args()
 
 if not os.path.isfile(args.input): 
